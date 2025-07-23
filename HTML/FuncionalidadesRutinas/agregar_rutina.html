@@ -1,0 +1,275 @@
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="CSS/Agregar_rutina.css">
+
+    <title>AGREGAR RUTINAS</title>
+</head>
+<body>
+    <h1>Agregar nueva rutina</h1>
+    <form method="post">
+        <label for="nombre">Grupo Muscular:</label>
+        <input type="text" id="grupoMuscular" name="grupoMuscular" required>
+
+        <label for="descripcion">Ejercicio:</label>
+        <textarea id="descripcion" name="descripcion" required></textarea>
+
+        <label for="dias">Días de la semana:</label>
+        <select id="dias" name="dias[]" multiple required>
+            <option value="lunes">Lunes</option>
+            <option value="martes">Martes</option>
+            <option value="miercoles">Miércoles</option>
+            <option value="jueves">Jueves</option>
+            <option value="viernes">Viernes</option>
+            <option value="sabado">Sábado</option>
+            <option value="domingo">Domingo</option>
+        </select>
+
+        <button type="submit">Agregar Ejercicio</button>
+</body>
+</html>-->
+
+
+<html>
+
+  <div class="agregar-rutina">
+    <h2>Agregar Nueva Rutina</h2>
+    <form id="rutinaForm">
+      <label for="dia">Día:</label>
+      <select id="dia">
+        <!-- Opciones generadas dinámicamente -->
+      </select>
+
+      <div class="grupo-inputs">
+        <input type="text" id="grupoMuscular" placeholder="Ej: Espalda" />
+        <input type="text" id="ejercicio" placeholder="Ej: Jalón al pecho" />
+        <button type="button" id="agregarEjercicio">Agregar Ejercicio</button>
+      </div>
+
+      <ul id="listaEjercicios">
+        <!-- Ejercicios agregados dinámicamente -->
+      </ul>
+
+      <button type="submit" id="guardarRutina">Guardar Rutina</button>
+    </form>
+  </div>
+</html>
+
+<script>
+  // Estructura para la rutina en memoria
+let rutina = {
+  dia: null,
+  ejercicios: []
+};
+
+// Al cargar la página, traer los días y grupos musculares desde Supabase y poblar los select
+// (funciones asincrónicas de Supabase aquí)
+
+document.getElementById('agregarEjercicio').onclick = function() {
+  const grupo = document.getElementById('grupoMuscular').value;
+  const ejercicio = document.getElementById('ejercicio').value;
+  if (grupo && ejercicio) {
+    rutina.ejercicios.push({ grupo, ejercicio });
+    renderListaEjercicios();
+    // Limpiar campos si quieres
+  }
+};
+
+function renderListaEjercicios() {
+  const ul = document.getElementById('listaEjercicios');
+  ul.innerHTML = '';
+  rutina.ejercicios.forEach((ej, idx) => {
+    ul.innerHTML += `<li>${ej.grupo} - ${ej.ejercicio} <button onclick="eliminarEjercicio(${idx})">Eliminar</button></li>`;
+  });
+}
+function eliminarEjercicio(idx) {
+  rutina.ejercicios.splice(idx, 1);
+  renderListaEjercicios();
+}
+
+// Al guardar, envía la rutina a Supabase
+document.getElementById('rutinaForm').onsubmit = async function(e) {
+  e.preventDefault();
+  rutina.dia = document.getElementById('dia').value;
+  await guardarRutinaEnSupabase(rutina); // Implementar
+  // Refrescar, notificar, limpiar como prefieras
+};
+
+
+
+
+
+
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient('https://TU_SUPABASE_URL', 'TU_API_KEY');
+
+async function guardarRutinaEnSupabase(rutina) {
+  // 1. Guardar en 'rutinas'
+  // 2. Por cada ejercicio, guardar en 'rutina_ejercicios'
+  const { data, error } = await supabase
+    .from('rutinas')
+    .insert([{ /* datos generales de rutina */ }])
+    .select();
+
+  if (error) { /* manejar error */ }
+  const rutinaId = data[0].id;
+  const ejerciciosInsert = rutina.ejercicios.map(ej => ({
+    rutina_id: rutinaId,
+    grupo_muscular: ej.grupo,
+    ejercicio: ej.ejercicio,
+    // Orden, día, etc.
+  }));
+
+  await supabase.from('rutina_ejercicios').insert(ejerciciosInsert);
+}
+
+</script>
+
+
+
+
+<!--<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agregar Nueva Rutina</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #f5f9fc;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 24px 32px 32px 32px;
+      background: #f1f5fb;
+      border-radius: 9px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #333;
+    }
+    label {
+      font-weight: 700;
+      display: block;
+      margin-bottom: 6px;
+      margin-top: 22px;
+    }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d0d9e3;
+      border-radius: 5px;
+      box-sizing: border-box;
+      margin-top: 5px;
+      margin-bottom: 18px;
+      font-size: 1rem;
+      background-color: #fff;
+      transition: border-color 0.2s;
+    }
+    select:focus, input[type="text"]:focus {
+      border-color: #58a7ff;
+      outline: none;
+    }
+    .fieldset-box {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-radius: 8px;
+      padding: 18px;
+      margin-top: 10px;
+      margin-bottom: 18px;
+    }
+    .input-label {
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .btn {
+      background: #2196F3;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 3px;
+    }
+    .btn:hover {
+      background: #176db3;
+    }
+    .ejercicios-list {
+      background: #eaeff6;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 1rem;
+    }
+    .ejercicios-list ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .guardar-btn {
+      background: #2196F3;
+      color: #fff;
+      border: none;
+      padding: 10px 26px;
+      border-radius: 5px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: 4px;
+      cursor: pointer;
+    }
+    .guardar-btn:hover {
+      background: #176db3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Agregar Nueva Rutina</h2>
+    <form>
+      <label for="dia">Día:</label>
+      <select id="dia" name="dia">
+        <option>Lunes</option>
+        <option>Martes</option>
+        <option>Miércoles</option>
+        <option>Jueves</option>
+        <option>Viernes</option>
+        <option>Sábado</option>
+        <option>Domingo</option>
+      </select>
+
+      <div class="fieldset-box">
+        <label class="input-label" for="grupo">Grupo Muscular:</label>
+        <input type="text" id="grupo" name="grupo" placeholder="Ej: Espalda">
+
+        <label class="input-label" for="ejercicio">Ejercicio:</label>
+        <input type="text" id="ejercicio" name="ejercicio" placeholder="Ej: Jalón al pecho">
+
+        <button type="button" class="btn">Agregar Ejercicio</button>
+      </div>
+
+      <div class="ejercicios-list">
+        <ul>
+          <li>Grupo: asd - Ejercicio: asdasd</li>
+          <li>Grupo: asdasd - Ejercicio: asdad</li>
+          <li>Grupo: asdasd - Ejercicio: asdasdas</li>
+        </ul>
+      </div>
+
+      <button type="submit" class="guardar-btn">Guardar Rutina</button>
+    </form>
+  </div>
+</body>
+</html>
