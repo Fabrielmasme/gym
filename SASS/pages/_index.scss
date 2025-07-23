@@ -1,3 +1,5 @@
+@use '../abstracts/variables';
+
 *{
     margin: 0;
     padding: 0;
@@ -5,9 +7,9 @@
     text-decoration: none;
 }
 body{
-    background-color: #e5e2d6 ;
+    background-color: variables.$color-fondo;
     text-transform: uppercase;
-    color:  #292f33;
+    color:  #0070bb;
 }
 main p {
     text-align: center;

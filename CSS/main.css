@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+body {
+  background-color: #292f33;
+  text-transform: uppercase;
+  color: #0070bb;
+}
+
+main p {
+  text-align: center;
+}
+
+/*# sourceMappingURL=main.css.map */
