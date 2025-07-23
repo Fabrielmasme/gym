@@ -54,3 +54,7 @@ Este proyecto web personal tiene como objetivo ayudarme a **registrar y visualiz
 - **CSS3 / SCSS**
 - **JavaScript**
 - **Supabase** – Backend, Base de Datos, por el momento, al ser un proyecto personal , no tiene autenticación.
+
+## Linkedin
+
+www.linkedin.com/in/benitezmarcelofabricio
